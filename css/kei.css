@@ -1,0 +1,9 @@
+.input-error{
+    color:red;
+    font-weight: 600;
+}
+
+.input-okay{
+    color: lawngreen;
+    font-weight: 600;
+}
