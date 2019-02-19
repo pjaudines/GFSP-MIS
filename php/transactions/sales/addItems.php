@@ -63,9 +63,11 @@
         while($fetch2 = $query2->fetch_array()){
             $lastSalesItemID = $fetch2['salesItemID'];
             $lastSalesDate = $fetch2['startDate'];
-            $query3 = $conn->query("INSERT INTO `inventory_prodoutgoing` (`prodOutgoingID`, `salesItemID`,`prodID`, `prodDesc`, `prodType`, `outgoingDate`, `salesID`, `itemQty`) VALUES (NULL, '$lastSalesItemID', '$inventoryItemID', '$prodName', '$prodType', '$lastSalesDate', '$salesID', '$itmQty')") or die(mysqli_error());
+            $query3 = $conn->query("INSERT INTO `inventory_prodoutgoing` (`prodOutgoingID`, `salesItemID`,`prodID`, `prodDesc`, `prodType`, `outgoingDate`, `salesID`, `itemQty`) VALUES (NULL, '$lastSalesItemID', '$prodID', '$prodName', '$prodType', '$lastSalesDate', '$salesID', '$itmQty')") or die(mysqli_error());
         }
     }
     
-
+    $totalPrice = $conn->query("SELECT * FROM `transactions_sales` WHERE `salesID` = $salesID;") or die(mysqli_error());
+    $totalPriceFetch = $totalPrice->fetch_array();
+    echo $totalPriceFetch['salesTotal'];
 ?>

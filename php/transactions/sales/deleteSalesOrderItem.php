@@ -31,4 +31,8 @@
         
     }
     $salesTotalQuery = $conn->query("UPDATE `transactions_sales` SET `salesTotal` = '$totalSales' WHERE `transactions_sales`.`salesID` = $salesID;") or die(mysqli_error);
+   
+    $totalPrice = $conn->query("SELECT * FROM `transactions_sales` WHERE `salesID` = $salesID;") or die(mysqli_error());
+    $totalPriceFetch = $totalPrice->fetch_array();
+    echo $totalPriceFetch['salesTotal'];
 ?>

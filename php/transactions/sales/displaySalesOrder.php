@@ -22,19 +22,20 @@
         <td><?php echo $fetch['Terms']?></td>
         <td><?php echo $fetch['salesTotal']?></td>
         <td><?php echo $fetch['salesDate']?></td>
-        <td style="padding: 0;">
-                <div class="row">
+        <td style="padding: 0;text-align:center;">
+              
                     <!-- <form action="../../pages/transactions/sales-addItems.php" method="POST"> -->
-                    <input type="hidden" value="<?php echo $fetch['salesID']?>" name="salesID">
-                    <input type="hidden" value="<?php echo $fetch['salesDate']?>" name="salesDate" id="salesDate">
-                    <input type="hidden" value="<?php echo $fetch['clientControlNo']?>" name="clientControlNo">
-                    <button type="button" data-toggle="modal" data-target="btnViewCart<?php echo $fetch['salesID']?>" style="margin:0;" type="button" class="btn btn-icons btn-rounded btn-success" name="addPOItems"><i class='menu-icon mdi mdi-eye'></i></button>
+                    <!-- <input type="hidden" value="< ?php echo $fetch['salesID']?>" name="salesID">
+                    <input type="hidden" value="< ?php echo $fetch['salesDate']?>" name="salesDate" id="salesDate">
+                    <input type="hidden" value="< ?php echo $fetch['clientControlNo']?>" name="clientControlNo"> -->
+                    <button type="button" data-toggle="tooltip" data-placement="top" title="View" style="margin:0;" type="button" class="btn btn-icons btn-rounded btn-success" onclick="showSalesOrderModal(<?php echo $fetch['salesID']?>)" id="btnViewSalesOrder"><i class='menu-icon mdi mdi-eye'></i></button>
+                    <!-- <button type="button" style="margin:0;" type="button" class="btn btn-icons btn-rounded btn-primary" id="editSalesOrder"><i class='menu-icon mdi mdi-pencil'></i></button> -->
                     <!-- </form>-->        
                     <!-- <form method="post" action="../../php/transactions/sales/deleteSalesOrder.php">
-                    <input type="hidden" value="<?php echo $fetch['salesID']?>" name="salesID" id="salesID">
+                    <input type="hidden" value="< ?php echo $fetch['salesID']?>" name="salesID" id="salesID">
                     <button type="submit" class="btn btn-icons btn-rounded btn-danger" id="btnDeleteSalesID" name="btnDeleteSalesID"><i class="menu-icon mdi mdi-delete"></i></button>
                     </form> -->
-                </div>
+               
             </td>
     </tr>
 <?php

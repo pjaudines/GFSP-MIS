@@ -27,10 +27,10 @@
                     <input type="hidden" value="<?php echo $fetch['purchaseID']?>" name="purchaseID">                                            
                     <button type="submit" style="margin:0;" type="button" class="btn btn-icons btn-rounded btn-success"><i class='menu-icon mdi mdi-cart'></i></button>
                     </form>          
-                    <form method="post" action="../../php/transactions/purchase/deletePurchaseOrder.php">
+                    <!-- <form method="post" action="../../php/transactions/purchase/deletePurchaseOrder.php">
                     <input type="hidden" value="<?php echo $fetch['purchaseID']?>" name="purchaseID" id="purchaseID">
                     <button type="submit" class="btn btn-icons btn-rounded btn-danger" id="btnDeletePO" name="btnDeletePO"><i class="menu-icon mdi mdi-delete"></i></button>               
-                    </form>
+                    </form> -->
                 </div>                                                      
             </td>
         </tr>
