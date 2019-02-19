@@ -232,6 +232,32 @@
             $("#inventoryOutgoingDiv").fadeOut();
         });
 
+        $("#selectProdType").change(function(){
+            var productType = $("#selectProdType option:selected").val();
+            $.ajax({
+                url: "../../php/inventory/selectProduct.php",
+                data: {productType:productType},
+                method: "POST",
+                success: function(result){
+                  $("#selectProduct").html(result);
+                }
+            });
+        });
+
+        $("#selectProduct").change(function(){
+           var prodDesc = $("#selectProduct option:selected").text();
+          
+          $.ajax({
+            url: "../../php/inventory/viewStockCard.php",
+            data: {prodDesc:prodDesc},
+            method: "POST",
+            success: function(result){
+                alert(result);
+            }
+          });
+            
+        });
+
     });
 </script>
 </head>
@@ -289,6 +315,27 @@
                           </div>
                           <div id="stockCardDiv" style="display: none;">
                               <h3>Stock Card</h3>
+                              <hr>
+                                <div class="row">
+                                  <div class="col-sm-3">
+                                    <select class="form-control" id="selectProdType">
+                                      <option value="none">Select Product Type</option>
+                                      <?php 
+                                           $query = $conn->query("SELECT DISTINCT(prodType) from `inventory`") or die(mysqli_error());
+                                           while($fetch = $query->fetch_array()){
+                                      ?>
+                                            <option value="<?php echo $fetch['prodType']?>"><?php echo $fetch['prodType']?></option>
+                                      <?php
+                                        }
+                                      ?>
+                                    </select>
+                                  </div>
+                                  <div class="col-sm-3">
+                                        <select class="form-control" id="selectProduct">
+                                            <option value="none">Select Product Type First</option>
+                                        </select>
+                                  </div>
+                                </div>
                               <hr>
                               <div class="table-responsive" id="stockCardsTbl">
                               </div>

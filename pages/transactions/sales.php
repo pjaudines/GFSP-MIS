@@ -44,12 +44,13 @@
                 data: {salesItemID:salesItemID, salesID: salesID, itemQty: itemQty, prodName:prodName},
                 success: function(result){
                   displayItems(salesID);
-                  
+                  $("#txtTotal").val(result);
                 }
         });
     }
 
     function displayItems(salesID){
+
         $.ajax({
                   url: "../../php/transactions/sales/displayItems.php",
                   type: "POST",
@@ -73,11 +74,65 @@
                 }
         });
     }
-    $(document).ready(function(){
 
+    function clearModal(){
+      $("#txtSalesID").val("");
+      $("#clientName").val("none");
+      $("#paymentTerm").val("none");
+      $("#selectDate").val("");
       
+      $('.select2').select2({
+        theme: "bootstrap"
+      });
 
-      $("#products").change(function(){ //GET STOCKS AND REORDER POINT
+    }
+
+   function showSalesOrderModal(salesID){
+
+    
+    $.ajax({
+        url: "../../php/transactions/sales/displaySalesInfo.php",
+        data: {salesID:salesID},
+        method: "POST",
+        success: function(result){
+          $("#salesInfo").html(result);
+        }
+      });
+
+    var showSalesOrderModal = 1;
+
+    $.ajax({
+        url: "../../php/transactions/sales/displayItems.php",
+        data: {salesID:salesID, showSalesOrderModal:showSalesOrderModal},
+        method: "POST",
+        success: function(result){
+          $("#orderedItemsTable").html(result);
+          $("#viewSalesOrder").modal("show");
+          $("#itemsTable").dataTable();
+        }
+      });
+
+   }
+
+    $(document).ready(function(){
+      $("table").dataTable();
+      $("#btnCancel").click(function(){
+        clearModal();
+        $("#addNewTransactionSales").modal("hide");
+        $("#orderedItemsTbl").hide();
+      });
+
+      $("#btnDone").click(function(){
+        clearModal();
+        $("#addNewTransactionSales").modal("hide");
+        $("#orderedItemsTbl").hide();
+        $("#addTransactionBtn").show();
+        $("#btnCancel").show();
+        $("#btnDone").hide();
+      });
+      
+      var yearsToExpire;
+      $("#products").change(function(){ //GET STOCKS, REORDER POINT AND YEARS BEFORE EXPIRING
            var prodName = $("#products option:selected").val();
 
            $.ajax({// GET STOCKS
@@ -179,14 +234,17 @@
             success: function(result){
                 $("#confirmAdd").hide();
                 $("#addSuccess").fadeIn();
+                $("#addTransactionBtn").hide();
+                $("#btnCancel").hide();
+                $("#btnDone").show();
                 setTimeout(function(){
                   $("#addSuccess").fadeOut();
-                  $("#addNewTransactionSales").modal("hide");
+                  $("#orderedItemsTbl").fadeIn();
                   displaySales();
                 $("#addErrorPaymentTerm").text("");//resets error message
                 $("#addErrorClientName").text("");//resets error message
                 }, 2500);
-               
+
             }
         });
       });
@@ -196,44 +254,82 @@
       });
 
       $("#btnAddItem").click(function(){
-        
-        var itmType =  $("#prodType option:selected").val();
+
+          var currentDate = new Date();
+          var currentMonth = currentDate.getMonth() + 1;
+          var currentDay = currentDate.getDate();
+          var currentYear = currentDate.getFullYear();
+
+          var itmType =  $("#prodType option:selected").val();
           var prodDesc =  $("#products option:selected").val();
           var itmQty = $("#itmQty").val();
-          var selectedStartDate = $("#selectedDate").val();
-          var expiryDate = $("#expiryDate").val();
+          var selectedStartDate = currentYear + "-" + currentMonth + "-" + currentDay;
+          var expiryDate = (currentYear+5) + "-" + currentMonth + "-" + currentDay;
           var clientControlNo = $("#clientName option:selected").val();
           var salesID = $("#txtSalesID").val();
-          
-          if(itmType == "none" || prodDesc == "none" || itmQty < 1 || itmQty > prodStocksLeft || itmQty < prodReorderPoint){//start validation
+
+          if(itmType == "none" || prodDesc == "none" || itmQty < 1 || itmQty > prodStocksLeft || (prodStocksLeft-itmQty) < 5){ //start validation
             if(itmQty < 1){
-              $("#addErorItemQuantity").text("(must not be less than 1)");
+              $("#errorMessage").text("Item quantity must not be less than 1.");
+              $("#inputErrorMessage").fadeIn();
+              setTimeout(function(){
+                $("#inputErrorMessage").fadeOut();
+              }, 2500);
             }else{  //resets error message
-              $("#addErorItemQuantity").text("");
+              $("#errorMessage").text("");
+              $("#inputErrorMessage").hide();
             }
-            if(itmQty > prodStocksLeft){
-              $("#addErorItemQuantity").text("(There are only "+prodStocksLeft+" left in the stocks)");
-            }else{  //resets error message
-              if(itmQty < prodReorderPoint){
-                $("#addErorItemQuantity").text("(Ordered item is below the reorder point)");
-              }else{
-                $("#addErorItemQuantity").text("");
+
+            if(prodStocksLeft > prodReorderPoint){
+                if(itmQty > prodStocksLeft){
+                  $("#errorMessage").text("There are only "+prodStocksLeft+" left in the stocks.");
+                  $("#inputErrorMessage").fadeIn();
+                  setTimeout(function(){
+                $("#inputErrorMessage").hide();
+              }, 2500);
+                }else{  //resets error message
+
+                if((prodStocksLeft-itmQty) < 5){
+                  $("#errorMessage").text("Ordered item quatity is below the re-order point.");
+                  $("#inputErrorMessage").fadeIn();
+                  setTimeout(function(){
+                    $("#inputErrorMessage").hide();
+                  }, 2500);
+                }else{
+                  $("#errorMessage").text("");
+                  $("#inputErrorMessage").hide();
+                }
+
               }
             }
+
             if(itmType == "none"){
-              $("#addErroritemType").text("(required)");
+              $("#errorMessage").text("Please select item type.");
+              $("#inputErrorMessage").fadeIn();
+              setTimeout(function(){
+                $("#inputErrorMessage").fadeOut();
+              }, 2500);
             }else{  //resets error message
-              $("#addErroritemType").text("");
+              $("#errorMessage").text("");
+              $("#inputErrorMessage").hide();
             }
+
             if(prodDesc == "none"){
-              $("#addErrorItemName").text("(required)");
+              $("#errorMessage").text("Please enter product description.");
+              $("#inputErrorMessage").fadeIn();
+              setTimeout(function(){
+                $("#inputErrorMessage").fadeOut();
+              }, 2500);
             }else{  //resets error message
-              $("#addErrorItemName").text("");
+              $("#errorMessage").text("");
+              $("#inputErrorMessage").hide();
             }
+
           }else{ //posting of data
             $.post("../../php/transactions/sales/addItems.php",{salesID: salesID, prodType: itmType, prodDesc: prodDesc, itmQty: itmQty, clientControlNo:clientControlNo,selectedStartDate:selectedStartDate,expiryDate:expiryDate}, function(data, status){
               if(status == "success"){
                 displayItems(salesID);
+                $("#txtTotal").val(data);
                 //resets all error messages to none
                 $("#addErrorItemName").text("");
                 $("#addErroritemType").text("");
@@ -241,8 +337,8 @@
                 $("#products").html("<option>Select Item type first</option>");
                 $("#prodType").val('none');
                 $("#itmQty").val('');
-                //end rest
-                $("#addItem").modal("hide");
+                //end reset
+                
               }
           });
           }
@@ -272,9 +368,11 @@
               </div>
             </div>          
         </div>
+        
         <?php
             //MODALS
             include "../requiredPages/modals/addNewTransactionSalesOrder.php";
+            include "../requiredPages/modals/showSalesOrder.php";
         ?>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
